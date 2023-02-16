@@ -7,8 +7,8 @@ const {height, width} = Dimensions.get('window');
 export default function Main({navigation}) {
   const data = [
     {id: 1, type: 'Admin', source: require('../assets/ad.png'), number: 15},
-    {id: 2, type: 'Vendor', source: require('../assets/store.png'), number: 20},
-    {id: 3, type: 'Employee', source: require('../assets/emp.png'), number: 20},
+    {id: 2, type: 'Vendor', source: require('../assets/store.png'), number: 26},
+    {id: 3, type: 'Employee', source: require('../assets/emp.png'), number: 30},
     {id: 4, type: 'Driver', source: require('../assets/dri.png'), number: 20},
   ];
 
@@ -16,7 +16,7 @@ export default function Main({navigation}) {
     return (
       <View style={{flex: 1}}>
         <TouchableOpacity onPress={() => navigation.navigate('AdminDetails')}>
-          <View style={{margin: 20, alignItems: 'center'}}>
+          <View style={{ alignItems: 'center', margin: 20}}>
             <View
               style={{
                 height: 130,
@@ -49,13 +49,13 @@ export default function Main({navigation}) {
       style={{
         margin: height * 0.001,
         backgroundColor: '#FFFFFF',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
+        height: '99.8%',
+        justifyContent: 'space-between'
       }}>
+
       <View
         style={{
-          height: '10%',
+          height: '8%',
           width: '100%',
           backgroundColor: '#4171E1',
           flexDirection: 'row',
@@ -68,8 +68,8 @@ export default function Main({navigation}) {
         </Text>
         <Icon name={'more-vert'} size={30} />
       </View>
-      <View
-        style={{width: width}}>
+
+      <View style={{width: width}}>
         <FlatList
           data={data}
           numColumns={2}
@@ -77,16 +77,16 @@ export default function Main({navigation}) {
           keyExtractor={item => item.id}
         />
       </View>
+
       <View
         style={{
-          height: '10%',
+          height: '8%',
           width: '100%',
           backgroundColor: '#4171E1',
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: 10,
-          
         }}>
         <View style={{alignItems: 'center'}}>
           <Image
