@@ -3,36 +3,38 @@ import {View, Text, Dimensions, ScrollView} from 'react-native';
 import {RadioButton} from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {postData} from '../connection/FetchServices';
-import Input from '../uicomponent/Input';
-import AppButton from '../uicomponent/AppButton';
+import {postData} from '../../connection/FetchServices';
+import Input from '../../uicomponent/Input';
+import AppButton from '../../uicomponent/AppButton';
 import StateCity from '../assets/StateCity.json';
 
 const {height, width} = Dimensions.get('window');
 
-export default function CreateVendor() {
+export default function CreateVendor({navigation}) {
+  const [getCities, setCities] = useState([]);
+  const [checked, setChecked] = useState('Yes');
+  const [error, setError] = useState({});
   const [inputs, setInputs] = useState({
-    firmname: '',
-    typeoffirm: '',
+    firm_name: '',
+    type_of_firm: '',
     country: '',
+    state: '',
+    city: '',
     gstno: '',
     address: '',
     emailid: '',
     mobileno: '',
     status: '',
-    state: '',
-    city: '',
   });
-  const [error, setError] = useState({});
 
   const validate = () => {
     var isValid = true;
-    if (!inputs.firmname) {
-      handleErrors('Please Input Name', 'firmname');
+    if (!inputs.firm_name) {
+      handleErrors('Please Input Name', 'firm_name');
       isValid = false;
     }
-    if (!inputs.typeoffirm) {
-      handleErrors('Please Input firmname', 'typeoffirm');
+    if (!inputs.type_of_firm) {
+      handleErrors('Please Input firmname', 'type_of_firm');
       isValid = false;
     }
     if (!inputs.country) {
@@ -60,22 +62,17 @@ export default function CreateVendor() {
   };
 
   const states = Object.keys(StateCity);
-  const [getCities, setCities] = useState([]);
 
-  const handleState = state => {
+  const handleStates = state => {
     const cities = StateCity[state];
     setCities(cities);
   };
 
-  const handleCity = city => {};
-
-  const [checked, setChecked] = React.useState('first');
-
   const handleSubmit = async () => {
     if (validate()) {
       let body = {
-        firm_name: inputs.firmname,
-        type_of_firm: inputs.typeoffirm,
+        firm_name: inputs.firm_name,
+        type_of_firm: inputs.type_of_firm,
         country: inputs.country,
         gstno: inputs.gstno,
         address: inputs.address,
@@ -88,8 +85,8 @@ export default function CreateVendor() {
       const result = await postData('vendor', body);
       console.log(result);
       alert(result.status);
+      navigation.goBack();
     }
-    // }
   };
 
   const handleValues = (txt, attr) => {
@@ -101,34 +98,36 @@ export default function CreateVendor() {
   };
 
   return (
-    <View style={{margin: height * 0.001, backgroundColor: 'white'}}>
+    <View style={{margin: height * 0.001}}>
       <ScrollView>
-        <View>
+        <View
+          style={{
+            justifyContent: 'space-between',
+            height: height
+          }}>
           <Text
             style={{
               fontSize: 16,
               fontFamily: 'Montserrat',
               fontWeight: 'bold',
               color: '#2C2C2C',
-              marginLeft: 40,
+              alignSelf: 'center',
+              marginTop: 10
             }}>
             Vendor Details
           </Text>
-          <View
-            style={{
-              alignItems: 'center',
-              backgroundColor: 'white',
-            }}>
+
+          <View style={{display: 'flex', alignItems: 'center',}}>
             <Input
               error={error.firmname}
-              onFocus={() => handleErrors(null, 'firmname')}
-              onChangeText={txt => handleValues(txt, 'firmname')}
+              onFocus={() => handleErrors(null, 'firm_name')}
+              onChangeText={txt => handleValues(txt, 'firm_name')}
               placeholder="Firm Name"
             />
             <Input
               error={error.typeoffirm}
-              onFocus={() => handleErrors(null, 'typeoffirm')}
-              onChangeText={txt => handleValues(txt, 'typeoffirm')}
+              onFocus={() => handleErrors(null, 'type_of_firm')}
+              onChangeText={txt => handleValues(txt, 'type_of_firm')}
               placeholder="Type of Firm"
             />
             <Input
@@ -139,11 +138,11 @@ export default function CreateVendor() {
             />
           </View>
 
-          <View>
+          <View style={{ alignItems: 'center'}}>
             <SelectDropdown
               data={states}
               onSelect={(selectedItem, index) => {
-                handleState(selectedItem);
+                handleStates(selectedItem);
                 handleValues(selectedItem, 'state');
               }}
               buttonTextAfterSelection={(selectedItem, index) => {
@@ -152,17 +151,6 @@ export default function CreateVendor() {
               rowTextForSelection={(item, index) => {
                 return item;
               }}
-              buttonStyle={{
-                height: 40,
-                width: '80%',
-                borderRadius: 10,
-                backgroundColor: '#F1F1F1',
-                paddingLeft: 20,
-                marginTop: 20,
-                alignSelf: 'center',
-              }}
-              buttonTextStyle={{color: '#2C2C2C', textAlign: 'left'}}
-              defaultButtonText="Select State"
               renderDropdownIcon={isOpened => {
                 return (
                   <FontAwesome
@@ -172,6 +160,15 @@ export default function CreateVendor() {
                   />
                 );
               }}
+              buttonStyle={{
+                height: 40,
+                width: '82%',
+                borderRadius: 10,
+                backgroundColor: '#fff',
+                paddingLeft: 10,
+              }}
+              buttonTextStyle={{color: '#2C2C2C', textAlign: 'left'}}
+              defaultButtonText="Select State"
               dropdownIconPosition="right"
             />
             <SelectDropdown
@@ -186,16 +183,6 @@ export default function CreateVendor() {
               rowTextForSelection={(item, index) => {
                 return item;
               }}
-              buttonStyle={{
-                height: 40,
-                width: '80%',
-                borderRadius: 10,
-                backgroundColor: '#F1F1F1',
-                paddingLeft: 20,
-                marginTop: 20,
-                alignSelf: 'center',
-              }}
-              buttonTextStyle={{color: 'black', textAlign: 'left'}}
               renderDropdownIcon={isOpened => {
                 return (
                   <FontAwesome
@@ -205,15 +192,20 @@ export default function CreateVendor() {
                   />
                 );
               }}
+              buttonStyle={{
+                height: 40,
+                width: '82%',
+                borderRadius: 10,
+                backgroundColor: '#fff',
+                paddingLeft: 10,
+                marginTop: 20,
+              }}
+              buttonTextStyle={{color: 'black', textAlign: 'left'}}
               dropdownIconPosition="right"
             />
           </View>
 
-          <View
-            style={{
-              alignItems: 'center',
-              backgroundColor: 'white',
-            }}>
+          <View style={{alignItems: 'center'}}>
             <Input
               error={error.gstno}
               onFocus={() => handleErrors(null, 'gstno')}
@@ -226,13 +218,6 @@ export default function CreateVendor() {
               onChangeText={txt => handleValues(txt, 'address')}
               placeholder="Address"
             />
-          </View>
-
-          <View
-            style={{
-              alignItems: 'center',
-              backgroundColor: 'white',
-            }}>
             <Input
               error={error.emailid}
               onFocus={() => handleErrors(null, 'emailid')}
@@ -247,16 +232,14 @@ export default function CreateVendor() {
             />
           </View>
 
-          <View>
+          <View style={{justifyContent: 'flex-start'}}>
             <Text
               style={{
                 marginTop: 10,
                 fontWeight: 'bold',
                 color: '#2C2C2C',
-                marginTop: 10,
                 fontSize: 16,
-                marginLeft: 40,
-                alignItems: 'center',
+                marginLeft: 40
               }}>
               Status
             </Text>
@@ -265,8 +248,8 @@ export default function CreateVendor() {
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
                 marginTop: 5,
+                justifyContent: 'center'
               }}>
               <RadioButton
                 value="Yes"
@@ -289,7 +272,7 @@ export default function CreateVendor() {
             </View>
           </View>
 
-          <View style={{alignSelf: 'center'}}>
+          <View style={{ margin: 5, alignItems: 'center'}}>
             <AppButton
               onPress={handleSubmit}
               buttonText={'Create'}

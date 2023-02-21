@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import {useEffect} from 'react';
 import {
   View,
   Text,
@@ -9,15 +9,34 @@ import {
 } from 'react-native';
 import {TouchableOpacity} from 'react-native';
 
-
 const {height, width} = Dimensions.get('window');
 
 export default function Home({navigation}) {
   const data = [
-    { id: 1, type: 'Admin', source: require('../assets/adminIcon.png'), route: 'Main'},
-    {id: 2, type: 'Vendor', source: require('../assets/vendors.png'), route: 'AdminDetails' },
-    {id: 3, type: 'Employee', source: require('../assets/employee.png')},
-    {id: 4, type: 'Driver', source: require('../assets/employee.png')},
+    {
+      id: 1,
+      type: 'Admin',
+      source: require('./assets/adminIcon.png'),
+      route: 'Login',
+    },
+    {
+      id: 2,
+      type: 'Vendor',
+      source: require('./assets/vendors.png'),
+      route: 'Main',
+    },
+    {
+      id: 3,
+      type: 'Employee',
+      source: require('./assets/employee.png'),
+      route: 'Main',
+    },
+    {
+      id: 4,
+      type: 'Driver',
+      source: require('./assets/employee.png'),
+      route: 'Main',
+    },
   ];
 
   const Boxes = ({item}) => {
@@ -51,16 +70,14 @@ export default function Home({navigation}) {
     );
   };
 
-  
-
   return (
     <View style={{margin: height * 0.001}}>
       <ImageBackground
-        source={require('../assets/Mask.png')}
+        source={require('./assets/Mask.png')}
         style={{height: '100%', width: '100%'}}>
         <View style={{marginTop: 10, alignSelf: 'center'}}>
           <Image
-            source={require('../assets/Icon.png')}
+            source={require('./assets/Icon.png')}
             style={{
               height: 100,
               width: 100,

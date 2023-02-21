@@ -1,16 +1,21 @@
 import {useState, useEffect} from 'react';
 import {View, Dimensions, StyleSheet, Text} from 'react-native';
-import AppButton from '../uicomponent/AppButton';
-import {postData, postDataAxios} from '../connection/FetchServices';
+import AppButton from '../../uicomponent/AppButton';
+import {
+  postData,
+  postDataAxios,
+  getData,
+  putData,
+  deleteData,
+} from '../../connection/FetchServices';
 import DocumentPicker from 'react-native-document-picker';
 import {Image} from 'react-native-elements';
-import Input from '../uicomponent/Input';
+import Input from '../../uicomponent/Input';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Entypo from 'react-native-vector-icons/Entypo';
 
 const {height, width} = Dimensions.get('window');
 
-export default function CreateEmployee({navigation}) {
+export default function EditAdmin({navigation, route}) {
   const [inputs, setInputs] = useState({
     fullname: '',
     mobile: '',
@@ -21,6 +26,24 @@ export default function CreateEmployee({navigation}) {
 
   const [error, setError] = useState({});
   const [singleFile, setSingleFile] = useState([]);
+
+  const fetchDetails = async () => {
+    var result = await getData('admins/' + route.params.id);
+    console.log(result);
+    if (result.status) {
+      setInputs({
+        fullname: result.data.name,
+        mobile: result.data.mobileno,
+        emailid: result.data.emailid,
+        username: result.data.username,
+        password: result.data.password,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchDetails();
+  }, []);
 
   const validate = () => {
     var isValid = true;
@@ -68,20 +91,8 @@ export default function CreateEmployee({navigation}) {
     }
   };
 
-  const handleClick = async () => {
+  const handleEdit = async () => {
     if (validate()) {
-      // if (singleFile != null) {
-      //If file selected then create FormData
-      // const image = singleFile;
-      // const formData = new FormData();
-      // formData.append('name', inputs.name);
-      // formData.append('mobile', inputs.mobile);
-      // formData.append('emailid', inputs.emailid);
-      // formData.append('address', inputs.username);
-      // formData.append('password', inputs.password);
-      // singleFile.map(item => {
-      //   formData.append('image', item);
-      // });
       let body = {
         name: inputs.fullname,
         mobileno: inputs.mobile,
@@ -89,10 +100,14 @@ export default function CreateEmployee({navigation}) {
         username: inputs.username,
         password: inputs.password,
       };
-      const result = await postData('admins', body);
-      // alert(result.status);
+      var result = await putData('admins/' + route.params.id, body);
+      navigation.goBack();
     }
-    // }
+  };
+
+  const handleDelete = async () => {
+    var result = await deleteData('admins/' + route.params.id);
+    navigation.goBack();
   };
 
   const handleValues = (txt, attr) => {
@@ -105,30 +120,40 @@ export default function CreateEmployee({navigation}) {
 
   return (
     <View
-      style={{display: 'flex', alignItems: 'center', margin: height * 0.01}}>
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: height * 0.001,
+        height: '99.8%',
+      }}>
       <Input
         error={error.mobile}
         onFocus={() => handleErrors(null, 'fullname')}
         onChangeText={txt => handleValues(txt, 'fullname')}
         placeholder="Full Name"
+        value={inputs.fullname}
       />
       <Input
         error={error.mobile}
         onFocus={() => handleErrors(null, 'mobile')}
         onChangeText={txt => handleValues(txt, 'mobile')}
         placeholder="Mobile Number"
+        value={inputs.mobile}
       />
       <Input
         error={error.emailid}
         onFocus={() => handleErrors(null, 'emailid')}
         onChangeText={txt => handleValues(txt, 'emailid')}
         placeholder="Email ID"
+        value={inputs.emailid}
       />
       <Input
         error={error.address}
         onFocus={() => handleErrors(null, 'username')}
         onChangeText={txt => handleValues(txt, 'username')}
         placeholder="Create Username"
+        value={inputs.username}
       />
       <Input
         error={error.password}
@@ -136,11 +161,11 @@ export default function CreateEmployee({navigation}) {
         onChangeText={txt => handleValues(txt, 'password')}
         placeholder="Password"
         iconName={'eye-with-line'}
+        value={inputs.password}
       />
       <View
         style={{
           justifyContent: 'space-between',
-          display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
           marginTop: 20,
@@ -175,12 +200,28 @@ export default function CreateEmployee({navigation}) {
           </Text>
         </View>
       </View>
-      <AppButton
-        onPress={handleClick}
-        buttonText={'Sign up'}
-        bgColor="#FC6011"
-        btnWidth={0.8}
-      />
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
+          margin: 10
+        }}>
+        <AppButton
+          onPress={handleEdit}
+          buttonText={'Edit'}
+          bgColor="#FC6011"
+          btnWidth={0.3}
+          style={{marginRight: "10%"}}
+        />
+        <AppButton
+          onPress={handleDelete}
+          buttonText={'Delete'}
+          bgColor="#FC6011"
+          btnWidth={0.3}
+          style={{marginLeft: "10%"}}
+        />
+      </View>
     </View>
   );
 }

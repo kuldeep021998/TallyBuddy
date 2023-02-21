@@ -1,10 +1,10 @@
 import {useState, useEffect} from 'react';
 import {View, Dimensions, StyleSheet, Text} from 'react-native';
-import AppButton from '../uicomponent/AppButton';
-import {postData, postDataAxios} from '../connection/FetchServices';
+import AppButton from '../../uicomponent/AppButton';
+import {postData, postDataAxios} from '../../connection/FetchServices';
 import DocumentPicker from 'react-native-document-picker';
 import {Image} from 'react-native-elements';
-import Input from '../uicomponent/Input';
+import Input from '../../uicomponent/Input';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 
@@ -91,6 +91,7 @@ export default function CreateAdmin({navigation}) {
       };
       const result = await postData('admins', body);
       // alert(result.status);
+      navigation.goBack();
     }
     // }
   };
@@ -105,51 +106,64 @@ export default function CreateAdmin({navigation}) {
 
   return (
     <View
-      style={{display: 'flex', alignItems: 'center', margin: height * 0.01}}>
-      <Input
-        error={error.mobile}
-        onFocus={() => handleErrors(null, 'fullname')}
-        onChangeText={txt => handleValues(txt, 'fullname')}
-        placeholder="Full Name"
-      />
-      <Input
-        error={error.mobile}
-        onFocus={() => handleErrors(null, 'mobile')}
-        onChangeText={txt => handleValues(txt, 'mobile')}
-        placeholder="Mobile Number"
-      />
-      <Input
-        error={error.emailid}
-        onFocus={() => handleErrors(null, 'emailid')}
-        onChangeText={txt => handleValues(txt, 'emailid')}
-        placeholder="Email ID"
-      />
-      <Input
-        error={error.address}
-        onFocus={() => handleErrors(null, 'username')}
-        onChangeText={txt => handleValues(txt, 'username')}
-        placeholder="Create Username"
-      />
-      <Input
-        error={error.password}
-        onFocus={() => handleErrors(null, 'password')}
-        onChangeText={txt => handleValues(txt, 'password')}
-        placeholder="Password"
-        iconName={'eye-with-line'}
-      />
+      style={{
+        margin: height * 0.001,
+        backgroundColor: '#dfe6e9',
+        height: '99.8%',
+        justifyContent: 'center',
+      }}>
+      <View style={{alignItems: 'center'}}>
+        <Input
+          error={error.fullname}
+          onFocus={() => handleErrors(null, 'fullname')}
+          onChangeText={txt => handleValues(txt, 'fullname')}
+          placeholder="Full Name"
+        />
+        <Input
+          error={error.mobile}
+          onFocus={() => handleErrors(null, 'mobile')}
+          onChangeText={txt => handleValues(txt, 'mobile')}
+          placeholder="Mobile Number"
+        />
+        <Input
+          error={error.emailid}
+          onFocus={() => handleErrors(null, 'emailid')}
+          onChangeText={txt => handleValues(txt, 'emailid')}
+          placeholder="Email ID"
+        />
+        <Input
+          error={error.address}
+          onFocus={() => handleErrors(null, 'username')}
+          onChangeText={txt => handleValues(txt, 'username')}
+          placeholder="Create Username"
+        />
+        <Input
+          error={error.password}
+          onFocus={() => handleErrors(null, 'password')}
+          onChangeText={txt => handleValues(txt, 'password')}
+          placeholder="Password"
+          iconName={'eye-with-line'}
+        />
+      </View>
+
       <View
         style={{
-          justifyContent: 'space-between',
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
+          justifyContent: 'center',
           marginTop: 20,
         }}>
         {singleFile.map(item => {
           return (
             <Image
               source={{uri: item.uri}}
-              style={{width: 80, height: 80, resizeMode: 'contain'}}
+              style={{
+                width: 80,
+                height: 80,
+                marginRight: 20,
+                resizeMode: 'contain',
+              }}
             />
           );
         })}
@@ -175,12 +189,15 @@ export default function CreateAdmin({navigation}) {
           </Text>
         </View>
       </View>
-      <AppButton
-        onPress={handleClick}
-        buttonText={'Sign up'}
-        bgColor="#FC6011"
-        btnWidth={0.8}
-      />
+
+      <View style={{alignItems: 'center'}}>
+        <AppButton
+          onPress={handleClick}
+          buttonText={'Sign up'}
+          bgColor="#FC6011"
+          btnWidth={0.8}
+        />
+      </View>
     </View>
   );
 }
