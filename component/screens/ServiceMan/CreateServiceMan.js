@@ -8,45 +8,41 @@ import {
   Platform,
   PermissionsAndroid,
   Image,
-  ToastAndroid,
   StyleSheet,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
-import {Dropdown} from 'react-native-element-dropdown';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {ScrollView} from 'react-native';
+import Dicon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {ScrollView, TextInput} from 'react-native-gesture-handler';
 import {RadioButton} from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Input from '../../uicomponent/Input';
-import Icon from 'react-native-vector-icons/Entypo';
+// import FilePicker, {types} from 'react-native-document-picker';
 import AppButton from '../../uicomponent/AppButton';
+import Icon from 'react-native-vector-icons/Entypo';
+import Input from '../../uicomponent/Input';
 import {postDataAxios, getData} from '../../connection/FetchServices';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import SweetAlert from 'react-native-sweet-alert';
 
-import stateCity from '../assets/StateCity.json';
+import stateCity from '../assets/StateCity.json'
 
 const {width} = Dimensions.get('window');
-export default function CreateEmployee(navigation) {
+export default function Rough(navigation) {
   const [inputs, setInputs] = useState({
     name: '',
+    emailid: '',
     mobileno: '',
     address: '',
-    store_id: '',
-    emailid: '',
-    password: '',
-    aadharno: '',
+    aadhar_no: '',
     state: '',
     city: '',
+    servicearea: '',
+    password: '',
     status: '',
-    designation: '',
   });
+
   const [error, setError] = useState({});
-  const [store, setStore] = useState([]);
-  // const [checked, setChecked] = React.useState('first');
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
 
   const validate = () => {
     var isValid = true;
@@ -70,26 +66,21 @@ export default function CreateEmployee(navigation) {
       isValid = false;
       console.log(4);
     }
-    if (!inputs.aadharno) {
-      handleErrors('Please Input gstno', 'aadharno');
+    if (!inputs.aadhar_no) {
+      handleErrors('Please Input aadhar no.', 'aadhar_no');
       isValid = false;
       console.log(5);
-    }
-    if (!inputs.designation) {
-      handleErrors('Please Input designation', 'designation');
-      isValid = false;
-      console.log(6);
     }
     if (!inputs.address) {
       handleErrors('Please Input address', 'address');
       isValid = false;
       console.log(7);
     }
-    if (!inputs.store_id) {
-      handleErrors('Please Input id', 'store_id');
-      isValid = false;
-      console.log(8);
-    }
+    // if (!inputs.servicearea) {
+    //   handleErrors('Please Input Servicearea', 'servicearea');
+    //   isValid = false;
+    //   console.log(8);
+    // }
     console.log(isValid);
     return isValid;
   };
@@ -101,8 +92,6 @@ export default function CreateEmployee(navigation) {
     const cities = stateCity[state];
     setCities(cities);
   };
-
-  const handleCity = city => {};
 
   const [filePath, setFilePath] = useState(null);
 
@@ -224,38 +213,47 @@ export default function CreateEmployee(navigation) {
   };
 
   const [checked, setChecked] = React.useState('first');
+  const [servicearea, setServiceArea] = useState(['']);
 
-  const fetchStore = async store_id => {
-    const result = await getData('store', {store_id: store_id});
-    setStore(result.data);
+  const handleDeleteInput = index => {
+    const deletename = [...servicearea];
+    deletename.splice(index, 1);
+    setServiceArea([...deletename]);
   };
 
-  useEffect(function () {
-    fetchStore();
-  }, []);
+  const handleInputChange = (index, text) => {
+    const newInputs = [...servicearea];
+    newInputs[index] = text;
+    setServiceArea(newInputs);
+  };
+
+  const handleAddInput = () => {
+    const newInputs = [...servicearea];
+    newInputs.push('');
+    setServiceArea(newInputs);
+  };
 
   const handleSubmit = async () => {
     if (validate()) {
       let formdata = new FormData();
       formdata.append('name', inputs.name);
-      formdata.append('store_id', inputs.store_id);
       formdata.append('mobileno', inputs.mobileno);
       formdata.append('emailid', inputs.emailid);
       formdata.append('address', inputs.address);
       formdata.append('password', inputs.password);
-      formdata.append('addhar_no', inputs.aadharno);
+      formdata.append('addhar_no', inputs.aadhar_no);
       formdata.append('state', inputs.state);
       formdata.append('city', inputs.city);
+      formdata.append('servicearea', JSON.stringify(servicearea));
       formdata.append('status', inputs.status);
-      formdata.append('designation', inputs.designation);
       formdata.append('picture', {
         ...filePath,
       });
 
-      const result = await postDataAxios('employee', formdata);
+      const result = await postDataAxios('serviceman', formdata);
       if (result.status) {
         SweetAlert.showAlertWithOptions({
-          title: 'Employee Created Successfully',
+          title: 'Serviceman Created Successfully',
           confirmButtonTitle: 'OK',
           confirmButtonColor: '#000',
           otherButtonTitle: 'Cancel',
@@ -288,61 +286,6 @@ export default function CreateEmployee(navigation) {
     setError(prevStates => ({...prevStates, [attr]: txt}));
   };
 
-  const DropdownComponent = store_id => {
-    // const renderLabel = () => {
-    //   if (value || isFocus) {
-    //     return (
-    //       <Text style={[styles.label, isFocus && {color: 'blue'}]}>
-    //         Dropdown label
-    //       </Text>
-    //     );
-    //   }
-    //   return null;
-    // };
-    return (
-      <View>
-        {/* {renderLabel()} */}
-        <Dropdown
-          style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          containerStyle={{
-            flex: 1,
-            backgroundColor: '#f1f1f1',
-            borderRadius: 20,
-            marginTop: -20,
-            padding: 10,
-          }}
-          data={store}
-          search
-          maxHeight={300}
-          labelField="name"
-          valueField="store_id"
-          placeholder={!isFocus ? 'Select store' : '...'}
-          searchPlaceholder="Search..."
-          value={inputs.store_id}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={item => {
-            setValue(item.store_id);
-            handleValues(item.store_id, 'store_id');
-            setIsFocus(false);
-          }}fhandle
-          renderLeftIcon={() => (
-            <AntDesign
-              style={styles.icon}
-              color={isFocus ? 'blue' : 'black'}
-              name="Safety"
-              size={20}
-            />
-          )}
-        />
-      </View>
-    );
-  };
-
   return (
     <ScrollView style={{flex: 1}}>
       <View>
@@ -354,24 +297,18 @@ export default function CreateEmployee(navigation) {
             marginLeft: 20,
             marginTop: 10,
           }}>
-          Employee Details
+          Service Man
         </Text>
         <View
           style={{
             alignItems: 'center',
           }}>
-          <View>{DropdownComponent()}</View>
+          {/* // name, emailid, mobileno, address, addhar_no, state, city, servicearea, password, picture, status */}
           <Input
             error={error.name}
             onFocus={() => handleErrors(null, 'name')}
             onChangeText={txt => handleValues(txt, 'name')}
             placeholder="Name"
-          />
-          <Input
-            error={error.mobileno}
-            onFocus={() => handleErrors(null, 'mobileno')}
-            onChangeText={txt => handleValues(txt, 'mobileno')}
-            placeholder="Mobile No."
           />
           <Input
             error={error.emailid}
@@ -380,7 +317,13 @@ export default function CreateEmployee(navigation) {
             placeholder="Email Id"
           />
           <Input
-            error={error.password}
+            error={error.mobileno}
+            onFocus={() => handleErrors(null, 'mobileno')}
+            onChangeText={txt => handleValues(txt, 'mobileno')}
+            placeholder="Mobile No."
+          />
+          <Input
+            error={error.address}
             onFocus={() => handleErrors(null, 'address')}
             onChangeText={txt => handleValues(txt, 'address')}
             placeholder="Address"
@@ -389,15 +332,9 @@ export default function CreateEmployee(navigation) {
             height={120}
           />
           <Input
-            error={error.password}
-            onFocus={() => handleErrors(null, 'password')}
-            onChangeText={txt => handleValues(txt, 'password')}
-            placeholder="Password"
-          />
-          <Input
-            error={error.aadharno}
-            onFocus={() => handleErrors(null, 'aadharno')}
-            onChangeText={txt => handleValues(txt, 'aadharno')}
+            error={error.aadhar_no}
+            onFocus={() => handleErrors(null, 'aadhar_no')}
+            onChangeText={txt => handleValues(txt, 'aadhar_no')}
             placeholder="Aadhar No."
           />
           <View>
@@ -469,6 +406,88 @@ export default function CreateEmployee(navigation) {
               dropdownIconPosition="right"
             />
           </View>
+          <Input
+            error={error.password}
+            onFocus={() => handleErrors(null, 'password')}
+            onChangeText={txt => handleValues(txt, 'password')}
+            placeholder="Password"
+          />
+        </View>
+        <View style={{alignItems: 'center', marginTop: 10}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              width: width * 0.87,
+              justifyContent: 'space-between',
+            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#2C2C2C',
+              }}>
+              Service Area
+            </Text>
+            <TouchableOpacity onPress={handleAddInput}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  color: '#2C2C2C',
+                }}>
+                ADD MORE
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View>
+          <>
+            {servicearea.map((item, index) => (
+              <>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    width: '100%',
+                    margin: 10,
+                    gap: 4,
+                  }}>
+                  <View
+                    style={{
+                      width: width * 0.8,
+                      height: 40,
+                      backgroundColor: '#bdc3c7',
+                      borderRadius: 10,
+                    }}>
+                    <TextInput
+                      name="Product"
+                      placeholder="PinCode"
+                      onChangeText={txt => handleInputChange(index, txt)}
+                      style={{
+                        width: width * 0.8,
+                        backgroundColor: 'white',
+                        borderColor: '#f2f2f2',
+                        borderRadius: 10,
+                        padding: 10,
+                        height: 50,
+                      }}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginLeft: 10,
+                    }}>
+                    <TouchableOpacity onPress={() => handleDeleteInput(index)}>
+                      <Dicon name="delete" size={40} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </>
+            ))}
+          </>
         </View>
         <View>
           <Text
@@ -479,7 +498,7 @@ export default function CreateEmployee(navigation) {
               fontSize: 16,
               marginLeft: 20,
             }}>
-            Account Active
+            Status
           </Text>
           <View
             style={{
@@ -491,37 +510,24 @@ export default function CreateEmployee(navigation) {
             }}>
             <RadioButton
               value="Yes"
-              status={checked === 'first' ? 'checked' : 'unchecked'}
+              status={checked === '1' ? 'checked' : 'unchecked'}
               onPress={() => {
-                setChecked('first');
-                handleValues('first', 'status');
+                setChecked('1');
+                handleValues('1', 'status');
               }}
             />
             <Text style={{marginRight: 50}}>Yes</Text>
             <RadioButton
               value="No"
-              status={checked === 'second' ? 'checked' : 'unchecked'}
+              status={checked === '2' ? 'checked' : 'unchecked'}
               onPress={() => {
-                setChecked('second');
-                handleValues('second', 'status');
+                setChecked('2');
+                handleValues('2', 'status');
               }}
             />
             <Text>No</Text>
           </View>
         </View>
-
-        <View
-          style={{
-            alignItems: 'center',
-          }}>
-          <Input
-            error={error.designation}
-            onFocus={() => handleErrors(null, 'designation')}
-            onChangeText={txt => handleValues(txt, 'designation')}
-            placeholder="Designation"
-          />
-        </View>
-
         <View style={{alignItems: 'center'}}>
           <Icon
             name={'camera'}
@@ -558,40 +564,3 @@ export default function CreateEmployee(navigation) {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  dropdown: {
-    height: 50,
-    width: width * 0.9,
-    borderColor: 'white',
-    borderRadius: 8,
-    backgroundColor: 'white',
-    padding: 8,
-  },
-  icon: {
-    marginRight: 5,
-  },
-  label: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    left: 22,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
-    fontSize: 14,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
-  },
-});

@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {View, Dimensions, StyleSheet, Text} from 'react-native';
+import {View, Dimensions, StyleSheet, Text, ToastAndroid} from 'react-native';
 import AppButton from '../../uicomponent/AppButton';
 import {
   postData,
@@ -101,13 +101,47 @@ export default function EditAdmin({navigation, route}) {
         password: inputs.password,
       };
       var result = await putData('admins/' + route.params.id, body);
-      navigation.goBack();
+      if (result.status) {
+        ToastAndroid.showWithGravityAndOffset(
+          'Edited Successfully',
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+          25,
+          50,
+        );
+        navigation.goBack();
+      } else {
+        ToastAndroid.showWithGravityAndOffset(
+          'Not Edited',
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+          25,
+          50,
+        );
+      }
     }
   };
 
   const handleDelete = async () => {
     var result = await deleteData('admins/' + route.params.id);
-    navigation.goBack();
+    if (result.status) {
+      ToastAndroid.showWithGravityAndOffset(
+        'Edited Successfully',
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+        25,
+        50,
+      );
+      navigation.goBack();
+    } else {
+      ToastAndroid.showWithGravityAndOffset(
+        'Not Edited',
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+        25,
+        50,
+      );
+    }
   };
 
   const handleValues = (txt, attr) => {
@@ -205,21 +239,21 @@ export default function EditAdmin({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-evenly',
           alignItems: 'center',
-          margin: 10
+          margin: 10,
         }}>
         <AppButton
           onPress={handleEdit}
           buttonText={'Edit'}
           bgColor="#FC6011"
           btnWidth={0.3}
-          style={{marginRight: "10%"}}
+          style={{marginRight: '10%'}}
         />
         <AppButton
           onPress={handleDelete}
           buttonText={'Delete'}
           bgColor="#FC6011"
           btnWidth={0.3}
-          style={{marginLeft: "10%"}}
+          style={{marginLeft: '10%'}}
         />
       </View>
     </View>

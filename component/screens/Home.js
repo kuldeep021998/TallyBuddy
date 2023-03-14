@@ -17,7 +17,7 @@ export default function Home({navigation}) {
       id: 1,
       type: 'Admin',
       source: require('./assets/adminIcon.png'),
-      route: 'Login',
+      route: 'Admin Login',
     },
     {
       id: 2,
@@ -29,7 +29,7 @@ export default function Home({navigation}) {
       id: 3,
       type: 'Employee',
       source: require('./assets/employee.png'),
-      route: 'Main',
+      route: 'Employee Login',
     },
     {
       id: 4,

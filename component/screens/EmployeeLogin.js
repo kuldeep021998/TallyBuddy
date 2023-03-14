@@ -4,12 +4,13 @@ import Input from '../uicomponent/Input';
 import {useState, useEffect} from 'react';
 import AppButton from '../uicomponent/AppButton';
 import {postData} from '../connection/FetchServices';
+import {storeData} from '../Storage/AsyncStorage';
 
 const {height, width} = Dimensions.get('window');
 
-export default function Login({navigation}) {
+export default function EmployeeLogin({navigation, props}) {
   const [inputs, setInputs] = useState({
-    username: '',
+    email: '',
     password: '',
   });
 
@@ -17,8 +18,8 @@ export default function Login({navigation}) {
 
   const validate = () => {
     var isValid = true;
-    if (!inputs.username) {
-      handleErrors('Please Input Name', 'username');
+    if (!inputs.email) {
+      handleErrors('Please Input Name', 'email');
       isValid = false;
     }
     if (!inputs.password) {
@@ -38,10 +39,17 @@ export default function Login({navigation}) {
   };
 
   const handleClick = async () => {
-    // var body = {username: inputs.username, password: inputs.password};
-    // var result = await postData('amdins', body);
-    // Alert(result.status);
-    navigation.navigate('Main')
+    if (validate()) {
+      var result = await postData('employee/login', {
+        email: inputs.email,
+        password: inputs.password,
+      });
+      if (result.status) {
+        console.log(result.data);
+        storeData('EMPLOYEE', result.data);
+        navigation.navigate('EC');
+      }
+    }
   };
 
   return (
@@ -81,7 +89,7 @@ export default function Login({navigation}) {
                 fontFamily: 'Montserrat',
                 fontWeight: 'bold',
               }}>
-              Hello Admin !
+              Hello Employee !
             </Text>
             <Text
               style={{
@@ -94,10 +102,10 @@ export default function Login({navigation}) {
           </View>
           <View style={{alignSelf: 'center'}}>
             <Input
-              error={error.password}
-              onFocus={() => handleErrors(null, 'username')}
-              onChangeText={txt => handleValues(txt, 'username')}
-              placeholder="Username"
+              error={error.email}
+              onFocus={() => handleErrors(null, 'email')}
+              onChangeText={txt => handleValues(txt, 'email')}
+              placeholder="Email"
             />
             <Input
               error={error.password}

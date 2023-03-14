@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {View, Dimensions, StyleSheet, Text} from 'react-native';
+import {View, Dimensions, StyleSheet, Text, ToastAndroid} from 'react-native';
 import AppButton from '../../uicomponent/AppButton';
 import {postData, postDataAxios} from '../../connection/FetchServices';
 import DocumentPicker from 'react-native-document-picker';
@@ -91,7 +91,24 @@ export default function CreateAdmin({navigation}) {
       };
       const result = await postData('admins', body);
       // alert(result.status);
-      navigation.goBack();
+      if (result.status) {
+        ToastAndroid.showWithGravityAndOffset(
+          'Created Successfully',
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+          25,
+          50,
+        );
+        navigation.goBack();
+      } else {
+        ToastAndroid.showWithGravityAndOffset(
+          'Not Created',
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+          25,
+          50,
+        );
+      }
     }
     // }
   };

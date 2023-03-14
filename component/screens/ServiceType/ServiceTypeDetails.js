@@ -1,42 +1,33 @@
-import {
-  View,
-  Dimensions,
-  Image,
-  Text,
-  FlatList,
-  ScrollView,
-} from 'react-native';
+import {View, Dimensions, Text, FlatList, ScrollView} from 'react-native';
 import {getData} from '../../connection/FetchServices';
 import Input from '../../uicomponent/Input';
-const {height, width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import React, {useState, useEffect} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import AnimatedLottieView from 'lottie-react-native';
 
-export default function AdminDetails({navigation}) {
-  const [admins, setAdmins] = useState([]);
+export default function ServiceTypeDetails({navigation}) {
+  const [banks, setBanks] = useState([]);
   const [loader, setLoader] = useState(true);
 
-  const fetchAdmins = async () => {
+  const fetchBanks = async () => {
     setLoader(true);
-    var result = await getData('admins');
-    console.log(result);
+    var result = await getData('typesofservice');
     if (result.status) {
-      setAdmins(result.data);
+      setBanks(result.data);
     }
     setLoader(false);
-    console.log(setAdmins);
   };
 
   useEffect(function () {
-    fetchAdmins();
+    fetchBanks();
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchAdmins();
+      fetchBanks();
     }, []),
   );
 
@@ -53,7 +44,11 @@ export default function AdminDetails({navigation}) {
               justifyContent: 'space-between',
               borderRadius: 10,
             }}>
-            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+            {/* <View
+              style={{
+                marginTop: 5,
+                justifyContent: 'center',
+              }}>
               <Image
                 source={require('../assets/user.png')}
                 style={{
@@ -62,37 +57,36 @@ export default function AdminDetails({navigation}) {
                   resizeMode: 'contain',
                 }}
               />
-              <Text>{item.name}</Text>
-            </View>
+            </View> */}
             <View>
-              <Text style={{fontSize: 10, color: '#8E8E8E'}}>Username:</Text>
+              <Text style={{fontSize: 10, color: '#8E8E8E'}}>Name:</Text>
+              <Text style={{color: '#2C2C2C', fontSize: 14}}>{item.name}</Text>
+              <Text style={{fontSize: 10, color: '#8E8E8E'}}>Service Charge:</Text>
+              <Text style={{color: '#2C2C2C', fontSize: 14}}>{item.servicecharge}</Text>
+              <Text style={{fontSize: 10, color: '#8E8E8E'}}>Status</Text>
               <Text style={{color: '#2C2C2C', fontSize: 14}}>
-                {item.username}
-              </Text>
-              <Text style={{fontSize: 10, color: '#8E8E8E'}}>Password:</Text>
-              <Text style={{color: '#2C2C2C', fontSize: 14}}>
-                {item.password}
-              </Text>
-              <Text style={{fontSize: 10, color: '#8E8E8E'}}>Mobile:</Text>
-              <Text style={{color: '#2C2C2C', fontSize: 14}}>
-                {item.mobileno}
-              </Text>
-              <Text style={{fontSize: 10, color: '#8E8E8E'}}>Email:</Text>
-              <Text style={{color: '#2C2C2C', fontSize: 14}}>
-                {item.emailid}
+                {item.status == '1' ? 'Active' : 'Inactive'}
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Edit Admin', {id: item.id})}
+              onPress={() =>
+                navigation.navigate('Edit Service Type', {id: item.typesofservice_id})
+              }
               style={{
                 backgroundColor: 'white',
                 width: 30,
                 height: 30,
                 borderRadius: 50,
-                alignItems: 'center',
-                justifyContent: 'center',
+                margin: 10,
+                position: 'absolute',
+                right: 0,
+                top: 0,
               }}>
-              <Icon name={'edit'} size={20} color="black" />
+              <Icon
+                name={'edit'}
+                size={20}
+                style={{alignSelf: 'center', marginTop: 5, color: '#2C2C2C'}}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -107,7 +101,7 @@ export default function AdminDetails({navigation}) {
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-      <Input placeholder="Search" iconName={'eye-with-line'} />
+      <Input placeholder="Search" iconName={'magnifying-glass'} />
       <View style={{width: width, height: '85%'}}>
         {loader ? (
           <AnimatedLottieView
@@ -118,7 +112,7 @@ export default function AdminDetails({navigation}) {
           />
         ) : (
           <FlatList
-            data={admins}
+            data={banks}
             renderItem={({item}) => <Boxes item={item} />}
             keyExtractor={item => item.id}
           />

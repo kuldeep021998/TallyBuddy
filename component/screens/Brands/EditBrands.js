@@ -1,16 +1,15 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import {View, Text, Alert, Dimensions} from 'react-native';
+import {View, Text, Alert, Dimensions, StyleSheet} from 'react-native';
 import {RadioButton} from 'react-native-paper';
 import AppButton from '../../uicomponent/AppButton';
 import Input from '../../uicomponent/Input';
 import {getData, deleteData, putData} from '../../connection/FetchServices';
 import AnimatedLottieView from 'lottie-react-native';
-// import {SelectList} from 'react-native-dropdown-select-list';
-import SelectDropdown from 'react-native-select-dropdown';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {Dropdown} from 'react-native-element-dropdown';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const {height, width} = Dimensions.get('window');
+
 export default function EditBrands({navigation, route}) {
   const [inputs, setInputs] = useState({
     category_id: '',
@@ -19,10 +18,11 @@ export default function EditBrands({navigation, route}) {
     status: '',
   });
 
-  const {width} = Dimensions.get('window');
   const [error, setError] = useState({});
   const [loader, setLoader] = useState(true);
-  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
 
   const validate = () => {
     var isValid = true;
@@ -38,7 +38,7 @@ export default function EditBrands({navigation, route}) {
       handleErrors('Please Input Discount', 'discount');
       isValid = false;
     }
-    console.log(isValid);
+    // console.log(isValid);
     return isValid;
   };
 
@@ -67,42 +67,61 @@ export default function EditBrands({navigation, route}) {
     setLoader(false);
   };
 
-  const fetchCategory = async () => {
-    console.log(result);
-    const result = await getData('category/' + route.params.category_id);
-    setCategories(result.data.category_id);
-  };
-
-  // const fillCategoryDropDown = () => {
-  //   return categories.map(item => {
-  //     return(
-  //       <SelectDropdown value={item.category_id}>
-  //         {item.category_name}
-  //       </SelectDropdown>
-  //     )
-  //   });
-  // };
-
-  // const Category = Object.keys(fetchCategory);
-
-  // const handleCategory = Category => {
-  //   const data = fetchCategory[Category];
-  //   setData(data)
-  // };
-
-  // const[ data, setData] = useState([]);
-
-  // const states = Object.keys(stateCity);
-
-  // const handleStates = state => {
-  //   const cities = stateCity[state];
-  //   setCities(cities);
-  // };
-
   useEffect(function () {
     fetchBrands();
-    // fetchCategory();
+    fetchCategory();
   }, []);
+
+  const fetchCategory = async category_id => {
+    const result = await getData('category', {category_id: category_id});
+    setCategory(result.data);
+    // console.log('Category', result.data);
+  };
+
+  const DropdownComponent = category_id => {
+    return (
+      <View>
+        <Dropdown
+          style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          inputSearchStyle={styles.inputSearchStyle}
+          iconStyle={styles.iconStyle}
+          data={category}
+          search
+          maxHeight={300}
+          labelField="name"
+          valueField="category_id"
+          placeholder={
+            inputs.category_id
+              ? category.filter(
+                  item => item.category_id == inputs.category_id,
+                )?.[0]?.name
+              : !isFocus
+              ? 'Select item'
+              : '...'
+          }
+          searchPlaceholder="Search..."
+          value={inputs.category_id}
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          onChange={item => {
+            setValue(item.category_id);
+            handleValues(item.category_id, 'category_id');
+            setIsFocus(false);
+          }}
+          renderLeftIcon={() => (
+            <AntDesign
+              style={styles.icon}
+              color={isFocus ? 'blue' : 'black'}
+              name="Safety"
+              size={20}
+            />
+          )}
+        />
+      </View>
+    );
+  };
 
   const handleEdit = async () => {
     if (validate()) {
@@ -126,16 +145,6 @@ export default function EditBrands({navigation, route}) {
     setError(prevStates => ({...prevStates, [attr]: txt}));
   };
 
-  // const data = [
-  //   {key: '1', value: 'Mobiles', disabled: true},
-  //   {key: '2', value: 'Appliances'},
-  //   {key: '3', value: 'Cameras'},
-  //   {key: '4', value: 'Computers', disabled: true},
-  //   {key: '5', value: 'Vegetables'},
-  //   {key: '6', value: 'Diary Products'},
-  //   {key: '7', value: 'Drinks'},
-  // ];
-
   return (
     <View
       style={{
@@ -155,70 +164,15 @@ export default function EditBrands({navigation, route}) {
           />
         ) : (
           <View>
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: 'Montserrat',
-                fontWeight: 'bold',
-                color: '#2C2C2C',
-                marginLeft: 40,
-                marginTop: 10,
-              }}>
-              Edit
-            </Text>
             <View
               style={{
                 alignItems: 'center',
               }}>
               <View
                 style={{
-                  padding: 2,
-                  width: width * 0.9,
-                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}>
-                {/* <SelectList
-                  data={categories.map(item => ({
-                    key: item.category_id,
-                    value: item.name,
-                  }))}
-                  save="value"
-                /> */}
-                <SelectDropdown
-                  data={categories}
-                  // defaultValue={inputs.category_id}
-                  // value={inputs.category_id}
-                  onSelect={(selectedItem, index) => {
-                    handleState(selectedItem);
-                    handleValues(selectedItem, 'category');
-                  }}
-                  buttonTextAfterSelection={(selectedItem, index) => {
-                    return selectedItem;
-                  }}
-                  rowTextForSelection={(item, index) => {
-                    return item;
-                  }}
-                  buttonStyle={{
-                    height: 50,
-                    width: '90%',
-                    borderRadius: 10,
-                    backgroundColor: '#fff',
-                    paddingLeft: 20,
-                    marginTop: 10,
-                    alignSelf: 'center',
-                  }}
-                  buttonTextStyle={{color: '#2C2C2C', textAlign: 'left'}}
-                  defaultButtonText="Select Category"
-                  renderDropdownIcon={isOpened => {
-                    return (
-                      <FontAwesome
-                        name={isOpened ? 'chevron-up' : 'chevron-down'}
-                        color={'#444'}
-                        size={18}
-                      />
-                    );
-                  }}
-                  dropdownIconPosition="right"
-                />
+                {DropdownComponent()}
               </View>
               <Input
                 error={error.brand_name}
@@ -235,70 +189,69 @@ export default function EditBrands({navigation, route}) {
                 value={inputs.discount}
               />
             </View>
-            <View>
-              <Text
-                style={{
-                  marginTop: 10,
-                  fontWeight: 'bold',
-                  color: '#2C2C2C',
-                  marginTop: 10,
-                  fontSize: 16,
-                  marginLeft: 40,
-                }}>
-                Account Active
-              </Text>
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 5,
-                  marginLeft: 20,
-                  justifyContent: 'center',
-                }}>
-                <RadioButton
-                  value="1"
-                  status={
-                    checked == '1' || inputs.status == '1'
-                      ? 'checked'
-                      : 'unchecked'
-                  }
-                  onPress={() => {
-                    setChecked('1');
-                    handleValues('1', 'status');
-                  }}
-                />
-                <Text style={{marginRight: 50}}>Yes</Text>
-                <RadioButton
-                  value="2"
-                  status={
-                    checked == '2' || inputs.status == '2'
-                      ? 'checked'
-                      : 'unchecked'
-                  }
-                  onPress={() => {
-                    setChecked('2');
-                    handleValues('2', 'status');
-                  }}
-                />
-                <Text>No</Text>
-              </View>
+
+            <Text
+              style={{
+                marginTop: 10,
+                fontWeight: 'bold',
+                color: '#2C2C2C',
+                marginTop: 10,
+                fontSize: 16,
+                marginLeft: 5,
+              }}>
+              Status
+            </Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 5,
+                marginLeft: 20,
+                justifyContent: 'center',
+              }}>
+              <RadioButton
+                value="1"
+                status={
+                  checked == '1' || inputs.status == '1'
+                    ? 'checked'
+                    : 'unchecked'
+                }
+                onPress={() => {
+                  setChecked('1');
+                  handleValues('1', 'status');
+                }}
+              />
+              <Text style={{marginRight: 50}}>Yes</Text>
+              <RadioButton
+                value="2"
+                status={
+                  checked == '2' || inputs.status == '2'
+                    ? 'checked'
+                    : 'unchecked'
+                }
+                onPress={() => {
+                  setChecked('2');
+                  handleValues('2', 'status');
+                }}
+              />
+              <Text>No</Text>
             </View>
             <View
               style={{
                 alignItems: 'center',
                 flexDirection: 'row',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
               }}>
               <AppButton
                 onPress={handleEdit}
                 buttonText={'Edit'}
-                btnWidth={0.4}
+                btnWidth={0.3}
               />
               <AppButton
                 onPress={handleDelete}
                 buttonText={'Delete'}
-                btnWidth={0.4}
+                btnWidth={0.3}
               />
             </View>
           </View>
@@ -307,3 +260,39 @@ export default function EditBrands({navigation, route}) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  dropdown: {
+    height: 45,
+    width: 310,
+    borderRadius: 10,
+    backgroundColor: 'grey',
+    padding: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+});

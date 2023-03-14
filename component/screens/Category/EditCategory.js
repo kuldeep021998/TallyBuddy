@@ -111,7 +111,7 @@ export default function EditCategory({navigation, route}) {
             source={require('../assets/Tally Buddy Loader.json')}
             autoPlay
             loop
-            style={{height: 100, alignSelf: 'center', display: 'flex'}}
+            style={{height: 100, alignItems: 'center', display: 'flex', justifyContent: 'center'}}
           />
         ) : (
           <View>

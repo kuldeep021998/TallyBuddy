@@ -30,38 +30,73 @@ export default function Main({navigation}) {
     },
     {
       id: 4,
+      type: 'Attendance',
+      source: require('./assets/emp.png'),
+      number: 30,
+      route: 'Employee Attendance',
+    },
+    {
+      id: 5,
+      type: 'Employee Available',
+      source: require('./assets/emp.png'),
+      number: 30,
+      route: 'Employee Available',
+    },
+    {
+      id: 6,
       type: 'Category',
       source: require('./assets/category.png'),
       number: 20,
       route: 'Category Details',
     },
     {
-      id: 5,
+      id: 7,
       type: 'Store',
       source: require('./assets/store.png'),
       number: 20,
       route: 'Store Details',
     },
     {
-      id: 6,
+      id: 8,
       type: 'Banks',
       source: require('./assets/Bank.png'),
       number: 20,
       route: 'Bank Details',
     },
     {
-      id: 7,
+      id: 9,
       type: 'Brands',
       source: require('./assets/brand.png'),
       number: 20,
       route: 'Brand Details',
     },
     {
-      id: 8,
+      id: 10,
       type: 'Model',
       source: require('./assets/model.png'),
       number: 20,
       route: 'Model Details',
+    },
+    {
+      id: 11,
+      type: 'Type of Service',
+      source: require('./assets/model.png'),
+      number: 20,
+      route: 'Service Type Details',
+    },
+    {
+      id: 12,
+      type: 'Products',
+      source: require('./assets/model.png'),
+      number: 20,
+      route: 'Create Product',
+    },
+    {
+      id: 12,
+      type: 'ServiceMan',
+      source: require('./assets/model.png'),
+      number: 20,
+      route: 'Service Man Details',
     },
   ];
 
@@ -142,25 +177,46 @@ export default function Main({navigation}) {
             padding: 10,
           }}>
           <View style={{alignItems: 'center'}}>
-            <Image
-              source={require('./assets/home.png')}
-              style={{height: 18, width: 18, resizeMode: 'contain'}}
-            />
-            <Text>Home</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+              <Image
+                source={require('./assets/home.png')}
+                style={{
+                  height: 18,
+                  width: 18,
+                  resizeMode: 'contain',
+                  alignSelf: 'center',
+                }}
+              />
+              <Text>Home</Text>
+            </TouchableOpacity>
           </View>
           <View style={{alignItems: 'center'}}>
-            <Image
-              source={require('./assets/user.png')}
-              style={{height: 18, width: 18, resizeMode: 'contain'}}
-            />
-            <Text>Profile</Text>
+            <TouchableOpacity>
+              <Image
+                source={require('./assets/user.png')}
+                style={{
+                  height: 18,
+                  width: 18,
+                  resizeMode: 'contain',
+                  alignSelf: 'center',
+                }}
+              />
+              <Text>Profile</Text>
+            </TouchableOpacity>
           </View>
           <View style={{alignItems: 'center'}}>
-            <Image
-              source={require('./assets/setting.png')}
-              style={{height: 18, width: 18, resizeMode: 'contain'}}
-            />
-            <Text>Setting</Text>
+            <TouchableOpacity>
+              <Image
+                source={require('./assets/setting.png')}
+                style={{
+                  height: 18,
+                  width: 18,
+                  resizeMode: 'contain',
+                  alignSelf: 'center',
+                }}
+              />
+              <Text>Setting</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

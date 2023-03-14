@@ -36,13 +36,29 @@ const isValidAuth = async url => {
 
 const postDataAxios = async (url, body) => {
   try {
+    console.log(body);
     var response = await axios.post(`${ServerURL}/${url}`, body, {
       headers: {'Content-Type': 'multipart/form-data'},
     });
     var result = await response.data;
     return result;
   } catch (error) {
-    console.log(error);
+    console.log(error.response.data);
+
+    return false;
+  }
+};
+
+const putDataAxios = async (url, body) => {
+  try {
+    console.log(body);
+    var response = await axios.post(`${ServerURL}/${url}`, body, {
+      headers: {'Content-Type': 'multipart/form-data'},
+    });
+    var result = await response.data;
+    return result;
+  } catch (error) {
+    console.log(error.response.data);
 
     return false;
   }
@@ -95,4 +111,5 @@ export {
   postDataAxios,
   putData,
   deleteData,
+  putDataAxios
 };

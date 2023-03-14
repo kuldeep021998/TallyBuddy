@@ -101,6 +101,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
+        missingDimensionStrategy 'react-native-camera', 'general'
     }
 
     splits {
@@ -152,6 +154,8 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+
+    implementation 'com.android.support:multidex:1.0.3'
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
 
